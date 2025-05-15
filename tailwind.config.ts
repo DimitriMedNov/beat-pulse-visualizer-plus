@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+                medical: {
+                    heart: '#e63946',
+                    lungs: '#d8a499',
+                    normal: '#2a9d8f',
+                    bradycardia: '#457b9d',
+                    tachycardia: '#e76f51',
+                    arrhythmia: '#7209b7',
+                },
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +93,32 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+                'heart-beat': {
+                    '0%, 100%': { transform: 'scale(1)' },
+                    '15%': { transform: 'scale(1.15)' },
+                    '30%': { transform: 'scale(1)' },
+                    '45%': { transform: 'scale(1.10)' },
+                    '60%': { transform: 'scale(1)' },
+                },
+                'lungs-breathe': {
+                    '0%, 100%': { transform: 'scale(1)' },
+                    '50%': { transform: 'scale(1.07)' },
+                },
+                'fade-in': {
+                    '0%': { opacity: '0' },
+                    '100%': { opacity: '1' },
+                },
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+                'heart-beat-normal': 'heart-beat 1s ease-in-out infinite',
+                'heart-beat-bradycardia': 'heart-beat 1.5s ease-in-out infinite',
+                'heart-beat-tachycardia': 'heart-beat 0.6s ease-in-out infinite',
+                'heart-beat-arrhythmia': 'heart-beat 0.8s cubic-bezier(0.45, 0, 0.55, 1) infinite',
+                'lungs-breathe': 'lungs-breathe 4s ease-in-out infinite',
+                'fade-in': 'fade-in 0.5s ease-in-out',
 			}
 		}
 	},
