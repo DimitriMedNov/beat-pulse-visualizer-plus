@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart } from "lucide-react";
+import { Heart, Activity } from "lucide-react";
 import HeartAnimation from "@/components/HeartAnimation";
 import LungsAnimation from "@/components/LungsAnimation";
 
@@ -27,7 +27,7 @@ export default function MobileVisualization({
               <Heart className="h-4 w-4" /> Corazón
             </TabsTrigger>
             <TabsTrigger value="lungs" className="flex items-center gap-2">
-              <Heart className="h-4 w-4" /> Pulmones
+              <Activity className="h-4 w-4" /> Pulmones
             </TabsTrigger>
           </TabsList>
         </Tabs>

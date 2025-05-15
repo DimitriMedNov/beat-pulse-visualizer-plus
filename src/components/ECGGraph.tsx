@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
@@ -93,12 +94,24 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
       let lastTime = performance.now();
       let accumulatedTime = lastPointTime.current;
       
+      // Generate initial set of data points if starting from empty
+      if (data.length === 0) {
+        const initialData = [];
+        const timeStep = 0.01;
+        for (let t = 0; t < 2; t += timeStep) {
+          initialData.push(generateECGPoint(t, rhythmType));
+        }
+        setData(initialData);
+        accumulatedTime = 2;
+        lastPointTime.current = accumulatedTime;
+      }
+      
       const animate = (currentTime: number) => {
         const deltaTime = currentTime - lastTime;
         lastTime = currentTime;
         
-        // Add time based on animation speed
-        const timeIncrement = deltaTime / 1000 * getSpeedMultiplier(rhythmType);
+        // Add time based on animation speed (SLOWED DOWN for more realistic visualization)
+        const timeIncrement = deltaTime / 1000 * getSpeedMultiplier(rhythmType) * 0.5; // Slowed by factor of 0.5
         accumulatedTime += timeIncrement;
         lastPointTime.current = accumulatedTime;
         
@@ -129,8 +142,18 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
           cancelAnimationFrame(animationRef.current);
         }
       };
+    } else {
+      // When not playing, maintain a static line
+      if (data.length === 0) {
+        // Create a flat line when paused and no data exists
+        const flatLineData = [];
+        for (let i = 0; i < 50; i++) {
+          flatLineData.push({ time: i * 0.05, value: 0 });
+        }
+        setData(flatLineData);
+      }
     }
-  }, [isPlaying, rhythmType, onCycleComplete]);
+  }, [isPlaying, rhythmType, onCycleComplete, data.length]);
   
   // Helper function to get cycle duration based on rhythm type
   const getCycleDuration = (type: string): number => {
@@ -145,10 +168,10 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
   // Helper function to get animation speed multiplier
   const getSpeedMultiplier = (type: string): number => {
     switch (type) {
-      case "bradycardia": return 0.7;
-      case "tachycardia": return 1.5;
-      case "arrhythmia": return 1.2;
-      default: return 1;
+      case "bradycardia": return 0.5; // Even slower
+      case "tachycardia": return 1.0; // Slowed down
+      case "arrhythmia": return 0.8; // Slowed down
+      default: return 0.7; // Slowed down
     }
   };
   

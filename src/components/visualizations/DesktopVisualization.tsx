@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart } from "lucide-react";
+import { Heart, Activity } from "lucide-react";
 import HeartAnimation from "@/components/HeartAnimation";
 import LungsAnimation from "@/components/LungsAnimation";
 
@@ -31,7 +31,7 @@ export default function DesktopVisualization({
       <Card className="col-span-1">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Heart className="h-5 w-5 text-medical-lungs" /> Pulmones
+            <Activity className="h-5 w-5 text-medical-lungs" /> Pulmones
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[300px]">
