@@ -24,7 +24,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
 
       <footer className="py-4 px-4 border-t border-slate-200 bg-white">
         <div className="container text-center text-sm text-muted-foreground">
-          © 2025 Simulador de Ritmo Cardíaco | Desarrollado con tecnología avanzada
+          © 2025 Simulador de Ritmo Cardíaco
         </div>
       </footer>
     </div>
