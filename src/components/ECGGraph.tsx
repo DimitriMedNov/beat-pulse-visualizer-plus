@@ -180,37 +180,22 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
   // Get color based on rhythm type
   const getLineColor = (type: string): string => {
     switch (type) {
-      case "normal": return "#33FF33";
-      case "bradycardia": return "#33FF33";
-      case "tachycardia": return "#33FF33";
-      case "arrhythmia": return "#33FF33";
-      default: return "#33FF33";
+      case "normal": return "#2a9d8f";
+      case "bradycardia": return "#457b9d";
+      case "tachycardia": return "#e76f51";
+      case "arrhythmia": return "#7209b7";
+      default: return "#2a9d8f";
     }
   };
 
   return (
-    <div className="w-full h-full bg-black rounded-md border border-gray-600 shadow-md relative overflow-hidden">
-      {/* Grid overlay for monitor effect */}
-      <div className="absolute inset-0 bg-grid opacity-20" 
-           style={{ 
-             backgroundImage: 'linear-gradient(to right, #333 1px, transparent 1px), linear-gradient(to bottom, #333 1px, transparent 1px)',
-             backgroundSize: '20px 20px'
-           }}>
-      </div>
-      
+    <div className="w-full h-full bg-white rounded-md border border-gray-200 shadow-sm">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
           margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
-          className="z-10 relative"
         >
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="#333333" 
-            horizontal={true} 
-            vertical={true} 
-            strokeWidth={1} 
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis 
             dataKey="time"
             type="number"
@@ -218,36 +203,24 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
               (dataMin: number) => Math.max(0, dataMin - 0.1),
               (dataMax: number) => dataMax + 0.1
             ]}
-            tick={{ fontSize: 10 }}
-            stroke="#666666"
-            tickLine={{ stroke: '#666666' }}
-            axisLine={{ stroke: '#666666' }}
-            hide={true}
+            tick={{ fontSize: 12 }}
+            stroke="#888888"
           />
           <YAxis 
             domain={[-2.5, 2.5]} 
-            tick={{ fontSize: 10 }}
-            stroke="#666666"
-            tickLine={{ stroke: '#666666' }}
-            axisLine={{ stroke: '#666666' }}
-            hide={true}
+            tick={{ fontSize: 12 }}
+            stroke="#888888"
           />
           <Line
             type="monotone"
             dataKey="value"
             stroke={getLineColor(rhythmType)}
-            strokeWidth={2.5}
+            strokeWidth={2}
             dot={false}
             isAnimationActive={false}
           />
         </LineChart>
       </ResponsiveContainer>
-
-      {/* Monitor frame overlay */}
-      <div className="absolute inset-0 pointer-events-none border-4 border-gray-700 rounded-md shadow-inner"></div>
-
-      {/* Monitor glow effect */}
-      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-green-500/10 to-transparent pointer-events-none"></div>
     </div>
   );
 }
