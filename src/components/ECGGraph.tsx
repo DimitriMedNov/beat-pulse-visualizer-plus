@@ -1,3 +1,4 @@
+
 // Helper function to get cycle duration based on rhythm type
 const getCycleDuration = (type: string): number => {
   switch (type) {
@@ -179,16 +180,16 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
   // Get color based on rhythm type
   const getLineColor = (type: string): string => {
     switch (type) {
-      case "normal": return "#22c55e"; // Green-500
-      case "bradycardia": return "#0ea5e9"; // Sky-500
-      case "tachycardia": return "#f59e0b"; // Amber-500
-      case "arrhythmia": return "#d946ef"; // Fuchsia-500
-      default: return "#22c55e"; // Green-500
+      case "normal": return "#2a9d8f"; // medical-normal
+      case "bradycardia": return "#457b9d"; // medical-bradycardia
+      case "tachycardia": return "#e76f51"; // medical-tachycardia
+      case "arrhythmia": return "#7209b7"; // medical-arrhythmia
+      default: return "#2a9d8f"; // medical-normal
     }
   };
 
   return (
-    <div className="w-full h-full bg-black rounded-md border border-border overflow-hidden">
+    <div className="w-full h-full bg-card rounded-md border border-border overflow-hidden">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
@@ -196,7 +197,7 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
         >
           <CartesianGrid 
             strokeDasharray="3 3" 
-            stroke="rgba(0, 255, 0, 0.2)" 
+            stroke="rgba(107, 114, 128, 0.2)" 
             horizontal={true}
             vertical={true}
           />
@@ -207,13 +208,13 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
               (dataMin: number) => Math.max(0, dataMin - 0.1),
               (dataMax: number) => dataMax + 0.1
             ]}
-            stroke="rgba(0, 255, 0, 0.5)"
-            tick={{ fill: 'rgba(0, 255, 0, 0.7)' }}
+            stroke="rgba(107, 114, 128, 0.5)"
+            tick={{ fill: 'rgba(107, 114, 128, 0.7)' }}
           />
           <YAxis 
             domain={[-2.5, 2.5]} 
-            stroke="rgba(0, 255, 0, 0.5)"
-            tick={{ fill: 'rgba(0, 255, 0, 0.7)' }}
+            stroke="rgba(107, 114, 128, 0.5)"
+            tick={{ fill: 'rgba(107, 114, 128, 0.7)' }}
           />
           <Line
             type="monotone"

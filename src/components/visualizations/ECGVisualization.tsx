@@ -40,15 +40,15 @@ export default function ECGVisualization({
   return (
     <Card className="col-span-1 lg:col-span-2">
       <CardHeader className="bg-card border-b border-border">
-        <CardTitle className="flex items-center gap-2 text-green-500">
+        <CardTitle className="flex items-center gap-2">
           <span>Electrocardiograma</span>
-          <span className="text-sm font-normal text-green-400 ml-2">
+          <span className="text-sm font-normal text-muted-foreground ml-2">
             {getRhythmLabel(rhythmType)}
           </span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="h-[300px] p-1 bg-black">
+        <div className="h-[300px] p-1 bg-card">
           <ECGGraph
             rhythmType={rhythmType}
             isPlaying={isPlaying}
@@ -58,15 +58,15 @@ export default function ECGVisualization({
         
         <div className="p-4 bg-card flex flex-wrap justify-between items-center gap-2">
           <div>
-            <span className="text-sm font-medium text-green-500">Frecuencia:</span>{" "}
-            <span className="font-bold text-green-500">
+            <span className="text-sm font-medium">Frecuencia:</span>{" "}
+            <span className="font-bold">
               {getHeartRate(rhythmType)}{" "}
               {rhythmType !== "arrhythmia" && "BPM"}
             </span>
           </div>
           <div>
-            <span className="text-sm font-medium text-green-500">Ciclos completados:</span>{" "}
-            <span className="font-bold text-green-500">{cyclesCompleted}</span>
+            <span className="text-sm font-medium">Ciclos completados:</span>{" "}
+            <span className="font-bold">{cyclesCompleted}</span>
           </div>
         </div>
       </CardContent>
