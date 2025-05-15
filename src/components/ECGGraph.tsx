@@ -1,4 +1,3 @@
-
 // Helper function to get cycle duration based on rhythm type
 const getCycleDuration = (type: string): number => {
   switch (type) {
@@ -180,21 +179,20 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
   // Get color based on rhythm type
   const getLineColor = (type: string): string => {
     switch (type) {
-      case "normal": return "#00FF00";
-      case "bradycardia": return "#00FFFF";
-      case "tachycardia": return "#FFFF00";
-      case "arrhythmia": return "#FF00FF";
-      default: return "#00FF00";
+      case "normal": return "#22c55e"; // Green-500
+      case "bradycardia": return "#0ea5e9"; // Sky-500
+      case "tachycardia": return "#f59e0b"; // Amber-500
+      case "arrhythmia": return "#d946ef"; // Fuchsia-500
+      default: return "#22c55e"; // Green-500
     }
   };
 
   return (
-    <div className="w-full h-full bg-black rounded-md border border-gray-700 shadow-md overflow-hidden">
+    <div className="w-full h-full bg-black rounded-md border border-border overflow-hidden">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
           margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
-          className="clinical-monitor"
         >
           <CartesianGrid 
             strokeDasharray="3 3" 
