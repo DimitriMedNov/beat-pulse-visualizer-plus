@@ -67,9 +67,9 @@ const Index = () => {
 
   return (
     <PageLayout>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Column 1: Controls and Info */}
-        <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:gap-6">
+        {/* Controls */}
+        <div className="w-full">
           <SimulationControls
             isPlaying={isPlaying}
             selectedRhythm={selectedRhythm}
@@ -77,23 +77,25 @@ const Index = () => {
             onReset={handleReset}
             onSelectRhythm={handleRhythmChange}
           />
-
-          {/* Info */}
-          <div className="h-[280px]">
-            <RhythmInfo rhythmType={selectedRhythm} />
-          </div>
         </div>
 
-        {/* Column 2: ECG Graph */}
-        <ECGVisualization
-          rhythmType={selectedRhythm}
-          isPlaying={isPlaying}
-          cyclesCompleted={cyclesCompleted}
-          onCycleComplete={handleCycleComplete}
-        />
+        {/* ECG Graph */}
+        <div className="w-full">
+          <ECGVisualization
+            rhythmType={selectedRhythm}
+            isPlaying={isPlaying}
+            cyclesCompleted={cyclesCompleted}
+            onCycleComplete={handleCycleComplete}
+          />
+        </div>
+
+        {/* Info */}
+        <div className="w-full h-auto sm:h-[280px]">
+          <RhythmInfo rhythmType={selectedRhythm} />
+        </div>
 
         {/* Visualization - For mobile, use tabs; for desktop, show both side by side */}
-        <div className="col-span-1 lg:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="w-full">
           {isMobile ? (
             <MobileVisualization
               activeTab={activeTab}
@@ -102,10 +104,12 @@ const Index = () => {
               isPlaying={isPlaying}
             />
           ) : (
-            <DesktopVisualization
-              rhythmType={selectedRhythm}
-              isPlaying={isPlaying}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+              <DesktopVisualization
+                rhythmType={selectedRhythm}
+                isPlaying={isPlaying}
+              />
+            </div>
           )}
         </div>
       </div>

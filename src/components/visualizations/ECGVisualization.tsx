@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ECGGraph from "@/components/ECGGraph";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ECGVisualizationProps {
   rhythmType: string;
@@ -15,6 +16,7 @@ export default function ECGVisualization({
   cyclesCompleted,
   onCycleComplete
 }: ECGVisualizationProps) {
+  const isMobile = useIsMobile();
   
   const getRhythmLabel = (type: string): string => {
     switch (type) {
@@ -38,17 +40,17 @@ export default function ECGVisualization({
   };
 
   return (
-    <Card className="col-span-1 lg:col-span-2">
-      <CardHeader className="bg-card border-b border-border">
-        <CardTitle className="flex items-center gap-2">
+    <Card className="col-span-1 lg:col-span-2 w-full">
+      <CardHeader className="bg-card border-b border-border p-3 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg">
           <span>Electrocardiograma</span>
-          <span className="text-sm font-normal text-muted-foreground ml-2">
+          <span className="text-xs sm:text-sm font-normal text-muted-foreground ml-2">
             {getRhythmLabel(rhythmType)}
           </span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="h-[300px] p-1 bg-card">
+        <div className="h-[200px] sm:h-[300px] p-1 bg-card">
           <ECGGraph
             rhythmType={rhythmType}
             isPlaying={isPlaying}
@@ -56,16 +58,16 @@ export default function ECGVisualization({
           />
         </div>
         
-        <div className="p-4 bg-card flex flex-wrap justify-between items-center gap-2">
+        <div className="p-2 sm:p-4 bg-card flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm">
           <div>
-            <span className="text-sm font-medium">Frecuencia:</span>{" "}
+            <span className="font-medium">Frecuencia:</span>{" "}
             <span className="font-bold">
               {getHeartRate(rhythmType)}{" "}
               {rhythmType !== "arrhythmia" && "BPM"}
             </span>
           </div>
           <div>
-            <span className="text-sm font-medium">Ciclos completados:</span>{" "}
+            <span className="font-medium">Ciclos completados:</span>{" "}
             <span className="font-bold">{cyclesCompleted}</span>
           </div>
         </div>
