@@ -90,7 +90,7 @@ const Index = () => {
         </div>
 
         {/* Info */}
-        <div className="w-full h-auto sm:h-[280px]">
+        <div className="w-full">
           <RhythmInfo rhythmType={selectedRhythm} />
         </div>
 
@@ -115,6 +115,6 @@ const Index = () => {
       </div>
     </PageLayout>
   );
-};
+}
 
 export default Index;
