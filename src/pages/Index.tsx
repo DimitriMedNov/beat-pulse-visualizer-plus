@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Stop, Lungs, Heart } from "lucide-react";
+import { Play, Square, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -99,7 +98,7 @@ const Index = () => {
                   >
                     {isPlaying ? (
                       <>
-                        <Stop className="mr-2 h-5 w-5" /> Detener
+                        <Square className="mr-2 h-5 w-5" /> Detener
                       </>
                     ) : (
                       <>
@@ -184,7 +183,7 @@ const Index = () => {
                         <Heart className="h-4 w-4" /> Corazón
                       </TabsTrigger>
                       <TabsTrigger value="lungs" className="flex items-center gap-2">
-                        <Lungs className="h-4 w-4" /> Pulmones
+                        <Heart className="h-4 w-4" /> Pulmones
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>
@@ -216,7 +215,7 @@ const Index = () => {
                 <Card className="col-span-1">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Lungs className="h-5 w-5 text-medical-lungs" /> Pulmones
+                      <Heart className="h-5 w-5 text-medical-lungs" /> Pulmones
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="h-[300px]">

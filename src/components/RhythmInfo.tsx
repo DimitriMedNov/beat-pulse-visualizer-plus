@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Lungs } from "lucide-react";
+import { Heart } from "lucide-react";
 
 interface RhythmInfoProps {
   rhythmType: string;
