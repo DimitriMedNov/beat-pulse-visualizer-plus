@@ -8,6 +8,26 @@ interface ECGGraphProps {
   onCycleComplete?: () => void;
 }
 
+// Helper function to get cycle duration based on rhythm type
+const getCycleDuration = (type: string): number => {
+  switch (type) {
+    case "bradycardia": return 1.5;
+    case "tachycardia": return 0.6;
+    case "arrhythmia": return 0.9;
+    default: return 1;
+  }
+};
+
+// Helper function to get animation speed multiplier - with consistent values
+const getSpeedMultiplier = (type: string): number => {
+  switch (type) {
+    case "bradycardia": return 0.4; // Slower
+    case "tachycardia": return 0.7; // Keep consistent with normal
+    case "arrhythmia": return 0.6; // Keep consistent
+    default: return 0.5; // Normal heart rate, slowed down
+  }
+};
+
 export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECGGraphProps) {
   const [data, setData] = useState<{ time: number; value: number }[]>([]);
   const animationRef = useRef<number | null>(null);
@@ -156,26 +176,6 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
       }
     }
   }, [isPlaying, rhythmType, onCycleComplete, data.length]);
-  
-  // Helper function to get cycle duration based on rhythm type
-  const getCycleDuration = (type: string): number => {
-    switch (type) {
-      case "bradycardia": return 1.5;
-      case "tachycardia": return 0.6;
-      case "arrhythmia": return 0.9;
-      default: return 1;
-    }
-  };
-  
-  // Helper function to get animation speed multiplier - with consistent values
-  const getSpeedMultiplier = (type: string): number => {
-    switch (type) {
-      case "bradycardia": return 0.4; // Slower
-      case "tachycardia": return 0.7; // Keep consistent with normal
-      case "arrhythmia": return 0.6; // Keep consistent
-      default: return 0.5; // Normal heart rate, slowed down
-    }
-  };
   
   // Get color based on rhythm type
   const getLineColor = (type: string): string => {
