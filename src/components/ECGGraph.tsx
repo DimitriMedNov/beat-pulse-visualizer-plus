@@ -1,13 +1,4 @@
 
-import { useState, useEffect, useRef } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
-
-interface ECGGraphProps {
-  rhythmType: string;
-  isPlaying: boolean;
-  onCycleComplete?: () => void;
-}
-
 // Helper function to get cycle duration based on rhythm type
 const getCycleDuration = (type: string): number => {
   switch (type) {
@@ -27,6 +18,15 @@ const getSpeedMultiplier = (type: string): number => {
     default: return 0.5; // Normal heart rate, slowed down
   }
 };
+
+import { useState, useEffect, useRef } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+
+interface ECGGraphProps {
+  rhythmType: string;
+  isPlaying: boolean;
+  onCycleComplete?: () => void;
+}
 
 export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECGGraphProps) {
   const [data, setData] = useState<{ time: number; value: number }[]>([]);
@@ -180,22 +180,28 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
   // Get color based on rhythm type
   const getLineColor = (type: string): string => {
     switch (type) {
-      case "normal": return "#2a9d8f";
-      case "bradycardia": return "#457b9d";
-      case "tachycardia": return "#e76f51";
-      case "arrhythmia": return "#7209b7";
-      default: return "#2a9d8f";
+      case "normal": return "#00FF00";
+      case "bradycardia": return "#00FFFF";
+      case "tachycardia": return "#FFFF00";
+      case "arrhythmia": return "#FF00FF";
+      default: return "#00FF00";
     }
   };
 
   return (
-    <div className="w-full h-full bg-white rounded-md border border-gray-200 shadow-sm">
+    <div className="w-full h-full bg-black rounded-md border border-gray-700 shadow-md overflow-hidden">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
           margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
+          className="clinical-monitor"
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke="rgba(0, 255, 0, 0.2)" 
+            horizontal={true}
+            vertical={true}
+          />
           <XAxis 
             dataKey="time"
             type="number"
@@ -203,21 +209,22 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
               (dataMin: number) => Math.max(0, dataMin - 0.1),
               (dataMax: number) => dataMax + 0.1
             ]}
-            tick={{ fontSize: 12 }}
-            stroke="#888888"
+            stroke="rgba(0, 255, 0, 0.5)"
+            tick={{ fill: 'rgba(0, 255, 0, 0.7)' }}
           />
           <YAxis 
             domain={[-2.5, 2.5]} 
-            tick={{ fontSize: 12 }}
-            stroke="#888888"
+            stroke="rgba(0, 255, 0, 0.5)"
+            tick={{ fill: 'rgba(0, 255, 0, 0.7)' }}
           />
           <Line
             type="monotone"
             dataKey="value"
             stroke={getLineColor(rhythmType)}
-            strokeWidth={2}
+            strokeWidth={2.5}
             dot={false}
             isAnimationActive={false}
+            className="ecg-line"
           />
         </LineChart>
       </ResponsiveContainer>

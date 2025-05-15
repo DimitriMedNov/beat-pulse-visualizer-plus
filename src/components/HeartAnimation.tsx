@@ -1,5 +1,4 @@
 
-import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 
 interface HeartAnimationProps {
@@ -21,14 +20,30 @@ export default function HeartAnimation({ rhythmType, isPlaying }: HeartAnimation
     }
   };
 
+  // Use a softer color when not playing
+  const getGradientColors = () => {
+    if (!isPlaying) {
+      return {
+        start: "#F8C4CB",
+        end: "#e66b7d"
+      };
+    }
+    return {
+      start: "#FFDEE2",
+      end: "#e63946"
+    };
+  };
+
+  const colors = getGradientColors();
+
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       {/* SVG Heart with softer gradient */}
       <svg className="w-full h-full max-w-[300px] max-h-[300px]" viewBox="0 0 24 24">
         <defs>
           <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FFDEE2" />
-            <stop offset="100%" stopColor="#e63946" />
+            <stop offset="0%" stopColor={colors.start} />
+            <stop offset="100%" stopColor={colors.end} />
           </linearGradient>
         </defs>
         
@@ -53,20 +68,20 @@ export default function HeartAnimation({ rhythmType, isPlaying }: HeartAnimation
         <path 
           className={`${getHeartAnimationClass()}`}
           fill="none" 
-          stroke="#e63946" 
+          stroke={colors.end} 
           strokeWidth="0.4" 
           d="M12,5 C12,5 13,3 16,3 C19,3 20.5,5 20.5,5 C20.5,5 21,6 21,7"
         />
         <path 
           className={`${getHeartAnimationClass()}`}
           fill="none" 
-          stroke="#e63946" 
+          stroke={colors.end}
           strokeWidth="0.4" 
           d="M12,5 C12,5 11,3 8,3 C5,3 3.5,5 3.5,5 C3.5,5 3,6 3,7"
         />
       </svg>
 
-      {/* Pulse effect when playing with softer color */}
+      {/* Pulse effect only when playing */}
       {isPlaying && (
         <div className={`absolute inset-0 flex items-center justify-center ${getHeartAnimationClass()}`}>
           <div className="w-[70%] h-[70%] rounded-full bg-pink-200/50 opacity-0 animate-pulse" />

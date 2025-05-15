@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Play, Square } from "lucide-react";
+import { Play, Square, RotateCcw } from "lucide-react";
 import RhythmSelector from "@/components/RhythmSelector";
 
 interface SimulationControlsProps {
@@ -49,7 +49,7 @@ export default function SimulationControls({
             size="lg"
             className="py-6"
           >
-            Reiniciar
+            <RotateCcw className="mr-2 h-5 w-5" /> Reiniciar
           </Button>
         </div>
 
