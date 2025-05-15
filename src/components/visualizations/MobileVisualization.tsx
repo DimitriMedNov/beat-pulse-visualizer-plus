@@ -24,10 +24,10 @@ export default function MobileVisualization({
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="heart" className="flex items-center gap-2">
-              <Heart className="h-4 w-4" /> Corazón
+              <Heart className="h-4 w-4 text-pink-500" /> Corazón
             </TabsTrigger>
             <TabsTrigger value="lungs" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" /> Pulmones
+              <Activity className="h-4 w-4 text-blue-500" /> Pulmones
             </TabsTrigger>
           </TabsList>
         </Tabs>

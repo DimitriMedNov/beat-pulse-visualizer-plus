@@ -19,7 +19,7 @@ export default function DesktopVisualization({
       <Card className="col-span-1">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Heart className="h-5 w-5 text-medical-heart" /> Corazón
+            <Heart className="h-5 w-5 text-pink-500" /> Corazón
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[300px]">
@@ -31,7 +31,7 @@ export default function DesktopVisualization({
       <Card className="col-span-1">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-medical-lungs" /> Pulmones
+            <Activity className="h-5 w-5 text-blue-500" /> Pulmones
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[300px]">

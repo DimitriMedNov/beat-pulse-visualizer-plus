@@ -13,6 +13,7 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
   const animationRef = useRef<number | null>(null);
   const cyclesCompleted = useRef<number>(0);
   const lastPointTime = useRef<number>(0);
+  const speedRef = useRef<number>(getSpeedMultiplier(rhythmType));
 
   // Generate ECG data points based on rhythm type
   const generateECGPoint = (time: number, rhythmType: string) => {
@@ -87,6 +88,7 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
     setData([]);
     lastPointTime.current = 0;
     cyclesCompleted.current = 0;
+    speedRef.current = getSpeedMultiplier(rhythmType);
   }, [rhythmType]);
 
   useEffect(() => {
@@ -110,8 +112,8 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
         const deltaTime = currentTime - lastTime;
         lastTime = currentTime;
         
-        // Add time based on animation speed (SLOWED DOWN for more realistic visualization)
-        const timeIncrement = deltaTime / 1000 * getSpeedMultiplier(rhythmType) * 0.5; // Slowed by factor of 0.5
+        // Add time based on animation speed - constant speed regardless of time passed
+        const timeIncrement = deltaTime / 1000 * speedRef.current * 0.3; // Slowed down even more
         accumulatedTime += timeIncrement;
         lastPointTime.current = accumulatedTime;
         
@@ -165,13 +167,13 @@ export default function ECGGraph({ rhythmType, isPlaying, onCycleComplete }: ECG
     }
   };
   
-  // Helper function to get animation speed multiplier
+  // Helper function to get animation speed multiplier - with consistent values
   const getSpeedMultiplier = (type: string): number => {
     switch (type) {
-      case "bradycardia": return 0.5; // Even slower
-      case "tachycardia": return 1.0; // Slowed down
-      case "arrhythmia": return 0.8; // Slowed down
-      default: return 0.7; // Slowed down
+      case "bradycardia": return 0.4; // Slower
+      case "tachycardia": return 0.7; // Keep consistent with normal
+      case "arrhythmia": return 0.6; // Keep consistent
+      default: return 0.5; // Normal heart rate, slowed down
     }
   };
   
