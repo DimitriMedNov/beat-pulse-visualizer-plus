@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -65,9 +65,19 @@ const Index = () => {
     }
   };
 
+  // Force rerender on initial load to ensure mobile detection works
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // This will trigger a rerender
+      setCyclesCompleted(0);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <PageLayout>
-      <div className="grid grid-cols-1 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 gap-2 sm:gap-4">
         {/* Controls */}
         <div className="w-full">
           <SimulationControls
@@ -104,7 +114,7 @@ const Index = () => {
               isPlaying={isPlaying}
             />
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <DesktopVisualization
                 rhythmType={selectedRhythm}
                 isPlaying={isPlaying}
