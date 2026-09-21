@@ -22,7 +22,7 @@ entrega el navegador se acumula y se consume en pasos fijos de 1/250 de segundo,
 señal no depende de a cuántos cuadros por segundo vaya la pantalla; lo único que cambia es
 cada cuánto se redibuja.
 
-Las dos cosas están sujetas por **127 pruebas** que se ejecutan con `npm test`, entre ellas
+Las dos cosas están sujetas por **146 pruebas** que se ejecutan con `npm test`, entre ellas
 una que mide el ancho del QRS a 30, 45, 60, 75, 100, 120, 150 y 200 lpm y comprueba que no
 varía, y otra que simula 15 y 144 cuadros por segundo y verifica que la onda R sobrevive
 igual en los dos casos.
@@ -43,6 +43,13 @@ las respuestas. Al elegir se revela cuál era, aparece su explicación y el marc
 cuenta de aciertos y de la racha de seguidas. La frecuencia se sortea dentro del rango
 plausible del ritmo y se sigue mostrando, porque en bradicardia y taquicardia forma parte
 del diagnóstico.
+
+Y sobre todo, **al revelar la respuesta se marca encima del trazo lo que había que mirar**:
+el PR alargándose latido a latido hasta la P que no conduce en el bloqueo, el complejo ancho
+y la pausa compensadora de la extrasístole, el hueco donde deberían estar las ondas P en la
+fibrilación, o los intervalos R-R con sus milisegundos para que se vea de un golpe si son
+iguales o desiguales. Saber que era una fibrilación no enseña nada; ver dónde faltan las P,
+sí.
 
 Lo laborioso del examen fue tapar por dónde se escapaba la respuesta sin haber leído la
 onda, que resultaron ser cinco sitios: el nombre del ritmo junto al título, el color del
@@ -84,7 +91,7 @@ Otros comandos:
 | `npm run dev` | Servidor de desarrollo con recarga en caliente |
 | `npm run build` | Build de producción en `dist/` |
 | `npm run preview` | Sirve el build de producción para comprobarlo |
-| `npm test` | Las 127 pruebas de la lógica de la señal y del examen |
+| `npm test` | Las 146 pruebas de la lógica de la señal y del examen |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript en modo estricto |
 
@@ -108,6 +115,8 @@ El núcleo no depende de React ni del DOM, así que se puede probar directamente
 - **`src/lib/ecgEngine.ts`** — búfer circular con la ventana visible. El tiempo real que
   entrega `requestAnimationFrame` se consume en pasos **fijos** de 1/250 s, de modo que la
   onda es idéntica a 30 Hz que a 144 Hz.
+- **`src/lib/annotations.ts`** — qué señalar sobre el trazo para explicar cada ritmo, a
+  partir de las marcas de latido que devuelve el motor. Aritmética pura, sin lienzo.
 - **`src/lib/examen.ts`** — el modo examen: elegir el caso a partir de una semilla, sortear
   la frecuencia dentro del rango del ritmo y calificar la respuesta. Puro y reproducible,
   igual que los generadores de latidos.
