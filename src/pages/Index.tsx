@@ -171,10 +171,10 @@ export default function Index() {
           />
         )}
 
-        {/* El panel de explicación es donde de verdad se aprende, así que en
-            examen aparece justo al revelar el caso. */}
-        {!hideIdentity && <RhythmInfo rhythm={rhythm} />}
-
+        {/* El corazón y los pulmones van pegados al trazo, no al final de la
+            página: son la misma señal vista por dentro y se entienden mirando
+            las dos cosas a la vez. Abajo quedaba texto de por medio y había que
+            desplazarse para encontrarlos. */}
         {isMobile ? (
           <MobileVisualization
             activeTab={activeTab}
@@ -186,6 +186,11 @@ export default function Index() {
         ) : (
           <DesktopVisualization rhythm={rhythm} isPlaying={isPlaying} pulse={pulse} />
         )}
+
+        {/* El panel de explicación es donde de verdad se aprende, así que en
+            examen aparece justo al revelar el caso. Va al final porque es lo
+            único que se lee en lugar de mirarse. */}
+        {!hideIdentity && <RhythmInfo rhythm={rhythm} />}
       </div>
     </PageLayout>
   );

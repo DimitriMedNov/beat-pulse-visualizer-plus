@@ -28,7 +28,7 @@ export default function DesktopVisualization({
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-[300px]">
+        <CardContent className="h-[220px]">
           <HeartAnimation rhythm={rhythm} isPlaying={isPlaying} pulse={pulse} />
         </CardContent>
       </Card>
@@ -42,7 +42,7 @@ export default function DesktopVisualization({
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-[300px]">
+        <CardContent className="h-[220px]">
           <LungsAnimation rhythm={rhythm} isPlaying={isPlaying} />
         </CardContent>
       </Card>
