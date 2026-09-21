@@ -2,7 +2,8 @@ import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from "react
 
 import { useTheme } from "@/components/theme/theme-context";
 import { cn } from "@/lib/utils";
-import { ECGEngine, WINDOW_SECONDS, type BeatEvent } from "@/lib/ecgEngine";
+import { annotationsFor } from "@/lib/annotations";
+import { ECGEngine, SAMPLE_RATE, WINDOW_SECONDS, type BeatEvent } from "@/lib/ecgEngine";
 import {
   gridMetrics,
   isMajor,
@@ -29,11 +30,104 @@ interface ECGCanvasProps {
    * explorar: en examen estorba más de lo que ayuda.
    */
   calipers?: boolean;
+  /**
+   * Señala sobre el trazo lo que identifica al ritmo. En el examen se enciende
+   * al revelar la respuesta, que es cuando enseña algo: saber que era una
+   * fibrilación no sirve de nada si no ves dónde tendrían que estar las P.
+   */
+  annotate?: boolean;
 }
 
 /** Rango vertical en "mV" que cubre el gráfico. La onda R vale 1. */
 const Y_MIN = -0.7;
 const Y_MAX = 1.5;
+
+/** Dibuja las marcas que explican el ritmo: corchetes de intervalo y puntos. */
+function drawAnnotations(
+  ctx: CanvasRenderingContext2D,
+  engine: ECGEngine,
+  width: number,
+  height: number,
+  styles: CSSStyleDeclaration,
+): void {
+  const annotations = annotationsFor(
+    engine.rhythmId,
+    engine.beatMarks(),
+    SAMPLE_RATE,
+    engine.length,
+  );
+  if (annotations.length === 0) return;
+
+  const color = styles.getPropertyValue("--ecg-annotation").trim() || "currentColor";
+  const background = styles.getPropertyValue("--ecg-label-bg").trim() || "#fff";
+  const toX = (sample: number) => (sample / Math.max(engine.length - 1, 1)) * width;
+
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.font = "600 11px system-ui, sans-serif";
+  ctx.textAlign = "center";
+
+  // Extremos ya ocupados por una etiqueta en cada fila, para poder apartar la
+  // siguiente en vez de dejar que se pisen.
+  const taken: Record<string, { from: number; to: number; level: number }[]> = {
+    top: [],
+    bottom: [],
+  };
+
+  for (const annotation of annotations) {
+    const y = annotation.row === "top" ? height * 0.13 : height * 0.87;
+    const from = toX(annotation.from);
+    const to = toX(annotation.to);
+
+    ctx.beginPath();
+    if (annotation.kind === "interval") {
+      // Corchete: una barra con dos topes verticales.
+      ctx.moveTo(from, y - 5);
+      ctx.lineTo(from, y + 5);
+      ctx.moveTo(from, y);
+      ctx.lineTo(to, y);
+      ctx.moveTo(to, y - 5);
+      ctx.lineTo(to, y + 5);
+    } else {
+      // Punto: un círculo con una patita hacia el trazo.
+      const tail = annotation.row === "top" ? 9 : -9;
+      ctx.moveTo(from, y);
+      ctx.lineTo(from, y + tail);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(from, y, 3.5, 0, Math.PI * 2);
+    }
+    ctx.stroke();
+
+    const centre = Math.min(Math.max((from + to) / 2, 4), width - 4);
+    const textWidth = ctx.measureText(annotation.label).width;
+    const clamped = Math.min(Math.max(centre, textWidth / 2 + 4), width - textWidth / 2 - 4);
+
+    // Si la etiqueta se solapa con otra ya puesta en su fila, sube o baja un
+    // renglón hasta encontrar sitio.
+    const span = { from: clamped - textWidth / 2 - 4, to: clamped + textWidth / 2 + 4 };
+    const row = taken[annotation.row];
+    let level = 0;
+    while (row.some((other) => other.level === level && other.from < span.to && span.from < other.to)) {
+      level += 1;
+    }
+    row.push({ ...span, level });
+
+    const away = annotation.row === "top" ? -1 : 1;
+    const labelY = y + away * (9 + level * 15);
+
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = background;
+    ctx.fillRect(span.from, labelY - (annotation.row === "top" ? 12 : 1), textWidth + 8, 14);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = color;
+    ctx.textBaseline = annotation.row === "top" ? "bottom" : "top";
+    ctx.fillText(annotation.label, clamped, labelY);
+  }
+
+  ctx.restore();
+}
 
 export default function ECGCanvas({
   rhythm,
@@ -42,6 +136,7 @@ export default function ECGCanvas({
   resetKey = 0,
   neutralColor = false,
   calipers = false,
+  annotate = false,
 }: ECGCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<ECGEngine | null>(null);
@@ -52,8 +147,10 @@ export default function ECGCanvas({
   /** Las dos marcas del calibrador, en píxeles del lienzo. */
   const calipersRef = useRef<{ from: number; to: number } | null>(null);
   const draggingRef = useRef(false);
+  const annotateRef = useRef(annotate);
 
   neutralRef.current = neutralColor;
+  annotateRef.current = annotate;
   const drawRef = useRef<() => void>(() => {});
 
   const { resolvedTheme } = useTheme();
@@ -161,6 +258,10 @@ export default function ECGCanvas({
       ctx.arc(width, toY(engine.at(count - 1)), 3, 0, Math.PI * 2);
       ctx.fill();
 
+      if (annotateRef.current) {
+        drawAnnotations(ctx, engine, width, height, styles);
+      }
+
       const marks = calipersRef.current;
       if (marks === null) return;
 
@@ -248,7 +349,7 @@ export default function ECGCanvas({
   // Redibuja al cambiar de tema o de modo, aunque esté en pausa.
   useEffect(() => {
     drawRef.current();
-  }, [resolvedTheme, neutralColor]);
+  }, [resolvedTheme, neutralColor, annotate]);
 
   // Bucle de animación. Nada de estado de React aquí dentro: sólo el motor y el
   // lienzo, así que la señal avanza sin re-renderizar el árbol.

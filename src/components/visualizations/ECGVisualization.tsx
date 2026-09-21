@@ -16,6 +16,8 @@ interface ECGVisualizationProps {
   hideIdentity?: boolean;
   /** En examen no hay calibrador: mide bien, pero ahí estorba. */
   examMode?: boolean;
+  /** Señalar sobre el trazo lo que identifica al ritmo. */
+  annotate?: boolean;
 }
 
 export default function ECGVisualization({
@@ -26,6 +28,7 @@ export default function ECGVisualization({
   resetKey,
   hideIdentity = false,
   examMode = false,
+  annotate = false,
 }: ECGVisualizationProps) {
   return (
     <Card className="w-full">
@@ -46,13 +49,20 @@ export default function ECGVisualization({
             resetKey={resetKey}
             neutralColor={hideIdentity}
             calipers={!examMode}
+            annotate={annotate}
           />
         </div>
 
-        {!examMode && (
+        {annotate ? (
           <p className="border-t px-2 pt-2 text-xs text-muted-foreground sm:px-3">
-            Arrastra sobre el trazo para medir un intervalo.
+            Marcado sobre el trazo, lo que identifica a este ritmo.
           </p>
+        ) : (
+          !examMode && (
+            <p className="border-t px-2 pt-2 text-xs text-muted-foreground sm:px-3">
+              Arrastra sobre el trazo para medir un intervalo.
+            </p>
+          )
         )}
 
         <div className="flex flex-wrap items-center justify-between gap-1 border-t p-2 text-xs sm:gap-2 sm:p-3 sm:text-sm">

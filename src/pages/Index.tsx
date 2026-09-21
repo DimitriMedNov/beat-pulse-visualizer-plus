@@ -158,6 +158,7 @@ export default function Index() {
           resetKey={resetKey}
           hideIdentity={hideIdentity}
           examMode={examMode}
+          annotate={reveal !== null}
         />
 
         {examMode && (

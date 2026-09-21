@@ -14,7 +14,8 @@ function bump(t: number, center: number, width: number, amplitude: number): numb
 // --- Anclas del complejo, en segundos ---------------------------------------
 
 /** Onda P: ~90 ms de ancho. */
-const P_CENTER = 0.05;
+export const P_CENTER_SECONDS = 0.05;
+const P_CENTER = P_CENTER_SECONDS;
 const P_WIDTH = 0.022;
 const P_AMPLITUDE = 0.13;
 

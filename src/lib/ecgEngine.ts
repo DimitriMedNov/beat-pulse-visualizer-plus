@@ -7,8 +7,13 @@
 // es cada cuánto se redibuja.
 
 import type { Beat } from "./beats";
-import { beatSample, complexTiming, type ComplexTiming } from "./ecgWaveform";
-import { beatSeconds, type Rhythm } from "./rhythms";
+import {
+  beatSample,
+  complexTiming,
+  type BeatMorphology,
+  type ComplexTiming,
+} from "./ecgWaveform";
+import { beatSeconds, type Rhythm, type RhythmId } from "./rhythms";
 
 /** Muestras por segundo de señal simulada. */
 export const SAMPLE_RATE = 250;
@@ -23,6 +28,19 @@ export interface BeatEvent {
   conducted: boolean;
   /** Origen ventricular: complejo ancho, como la extrasístole. */
   ventricular: boolean;
+}
+
+/**
+ * Un latido situado dentro de la ventana visible. Es lo que permite señalar
+ * sobre el trazo dónde está cada onda, en vez de tener que adivinarlo a partir
+ * de la señal ya dibujada.
+ */
+export interface BeatMark {
+  /** Muestra en la que empieza, contada desde la más antigua de la ventana. */
+  index: number;
+  /** Intervalo R-R de este latido, en segundos. */
+  rrSeconds: number;
+  morphology: BeatMorphology;
 }
 
 export class ECGEngine {
@@ -49,6 +67,10 @@ export class ECGEngine {
   private beatDuration: number;
   private clock = 0;
   private beats = 0;
+  /** Muestras producidas desde el arranque, para situar los latidos. */
+  private pushed = 0;
+  /** Latidos con su posición absoluta, de los que sólo se conservan los visibles. */
+  private marks: { at: number; rrSeconds: number; morphology: BeatMorphology }[] = [];
 
   constructor(rhythm: Rhythm, sampleRate = SAMPLE_RATE, windowSeconds = WINDOW_SECONDS) {
     this.step = 1 / sampleRate;
@@ -69,6 +91,11 @@ export class ECGEngine {
   /** Latidos completados desde el último reset. */
   get beatCount(): number {
     return this.beats;
+  }
+
+  /** Qué ritmo se está dibujando ahora mismo. */
+  get rhythmId(): RhythmId {
+    return this.rhythm.id;
   }
 
   /** Cambia de ritmo y limpia la pantalla. Para un cambio explícito del usuario. */
@@ -99,6 +126,10 @@ export class ECGEngine {
     this.beatElapsed = 0;
     this.clock = 0;
     this.beats = 0;
+    // La ventana arranca llena de línea isoeléctrica que nadie ha empujado, así
+    // que la cuenta absoluta parte de ahí para que los índices cuadren.
+    this.pushed = this.capacity;
+    this.marks = [];
     this.startBeat(0);
   }
 
@@ -159,6 +190,31 @@ export class ECGEngine {
     this.beat = this.rhythm.beats(index);
     this.beatDuration = beatSeconds(this.rhythm) * this.beat.rrScale;
     this.timing = complexTiming(this.beatDuration, this.beat.morphology);
+
+    this.marks.push({
+      at: this.pushed,
+      rrSeconds: this.beatDuration,
+      morphology: this.beat.morphology,
+    });
+    // Los que ya salieron de la ventana no vuelven, así que se tiran aquí para
+    // que la lista no crezca sin fin.
+    const oldest = this.oldest;
+    while (this.marks.length > 0 && this.marks[0].at < oldest) this.marks.shift();
+  }
+
+  /**
+   * Latidos que empiezan dentro de la ventana visible, del más antiguo al más
+   * reciente.
+   */
+  beatMarks(): BeatMark[] {
+    const oldest = this.oldest;
+    const visible: BeatMark[] = [];
+    for (const mark of this.marks) {
+      const index = mark.at - oldest;
+      if (index < 0 || index >= this.filled) continue;
+      visible.push({ index, rrSeconds: mark.rrSeconds, morphology: mark.morphology });
+    }
+    return visible;
   }
 
   /**
@@ -183,6 +239,12 @@ export class ECGEngine {
   private push(value: number): void {
     this.samples[this.head] = value;
     this.head = (this.head + 1) % this.capacity;
+    this.pushed += 1;
     if (this.filled < this.capacity) this.filled += 1;
+  }
+
+  /** Posición absoluta de la muestra más antigua que sigue en pantalla. */
+  private get oldest(): number {
+    return this.pushed - this.filled;
   }
 }

@@ -43,6 +43,8 @@
     --ecg-neutral: hsl(222.2 20% 25%);
     /* Calibrador: las marcas que se arrastran sobre el trazo para medir. */
     --ecg-caliper: hsl(222.2 47% 30%);
+    /* Marcas que explican el ritmo al revelar la respuesta del examen. */
+    --ecg-annotation: hsl(221.2 83.2% 45%);
     --ecg-label-bg: hsl(0 0% 100%);
   }
 
@@ -81,6 +83,7 @@
     --ecg-grid-major: rgba(255, 120, 120, 0.3);
     --ecg-neutral: hsl(210 20% 88%);
     --ecg-caliper: hsl(210 30% 80%);
+    --ecg-annotation: hsl(217.2 91.2% 70%);
     --ecg-label-bg: hsl(222.2 47.4% 8%);
   }
 }
