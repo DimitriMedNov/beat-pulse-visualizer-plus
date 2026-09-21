@@ -1,5 +1,8 @@
 # Beat Pulse
 
+[![Pruebas](https://github.com/DimitriMedNov/beat-pulse-visualizer-plus/actions/workflows/pruebas.yml/badge.svg)](https://github.com/DimitriMedNov/beat-pulse-visualizer-plus/actions/workflows/pruebas.yml)
+[![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](https://github.com/DimitriMedNov/beat-pulse-visualizer-plus/blob/main/LICENSE)
+
 Simulador de electrocardiograma para estudiantes de enfermería y medicina que están
 aprendiendo a distinguir ritmos. Eliges un ritmo y el trazo, el corazón y la respiración
 responden en tiempo real, o te pones a prueba con casos al azar en el modo examen.
