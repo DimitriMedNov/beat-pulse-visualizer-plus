@@ -1,10 +1,11 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
+    color-scheme: light;
+
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -14,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%; /* Azul más claro */
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -35,27 +36,29 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Papel de electro, leído por el lienzo al dibujar. */
+    --ecg-grid-minor: rgba(229, 115, 115, 0.22);
+    --ecg-grid-major: rgba(211, 47, 47, 0.42);
+    /* Trazo sin identidad, para que el color no delate la respuesta en examen. */
+    --ecg-neutral: hsl(222.2 20% 25%);
+    /* Calibrador: las marcas que se arrastran sobre el trazo para medir. */
+    --ecg-caliper: hsl(222.2 47% 30%);
+    --ecg-label-bg: hsl(0 0% 100%);
   }
 
   .dark {
+    color-scheme: dark;
+
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 47.4% 8%;
     --card-foreground: 210 40% 98%;
 
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -67,20 +70,18 @@
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 45%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --ecg-grid-minor: rgba(255, 130, 130, 0.11);
+    --ecg-grid-major: rgba(255, 120, 120, 0.3);
+    --ecg-neutral: hsl(210 20% 88%);
+    --ecg-caliper: hsl(210 30% 80%);
+    --ecg-label-bg: hsl(222.2 47.4% 8%);
   }
 }
 
@@ -94,23 +95,17 @@
   }
 }
 
-.ecg-line {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: dash 15s linear forwards infinite;
-}
-
-@keyframes dash {
-  to {
-    stroke-dashoffset: 0;
+@layer utilities {
+  /* `transform-origin: center` sobre un elemento SVG necesita `transform-box`,
+     si no el origen es el del lienzo entero y el escalado se descoloca. */
+  .origin-center-box {
+    transform-box: fill-box;
+    transform-origin: center;
   }
 }
 
-/* Gradient for heart and lungs */
-.heart-gradient {
-  fill: url(#heartGradient);
-}
-
-.lungs-gradient {
-  fill: url(#lungsGradient);
+@media (prefers-reduced-motion: reduce) {
+  .animate-lungs-breathe {
+    animation: none !important;
+  }
 }
