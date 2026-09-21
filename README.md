@@ -38,11 +38,20 @@ auricular (sin ondas P, intervalos caóticos y línea de base temblando), extras
 ventricular (complejo ancho y pausa compensadora) y bloqueo AV de 2.º grado Mobitz I (el PR
 se alarga hasta que un latido no conduce y se ve la P sola).
 
-En el **modo examen** la app sortea un ritmo y lo esconde: desaparecen su nombre, su color y
-el deslizador de frecuencia, y los siete botones pasan a ser las respuestas. Al elegir se
-revela cuál era, aparece su explicación y el marcador lleva la cuenta de aciertos y de la
-racha de seguidas. La frecuencia se sortea dentro del rango plausible del ritmo y se sigue
-mostrando, porque en bradicardia y taquicardia forma parte del diagnóstico.
+En el **modo examen** la app sortea un ritmo y lo esconde, y los siete botones pasan a ser
+las respuestas. Al elegir se revela cuál era, aparece su explicación y el marcador lleva la
+cuenta de aciertos y de la racha de seguidas. La frecuencia se sortea dentro del rango
+plausible del ritmo y se sigue mostrando, porque en bradicardia y taquicardia forma parte
+del diagnóstico.
+
+Lo laborioso del examen fue tapar por dónde se escapaba la respuesta sin haber leído la
+onda, que resultaron ser cinco sitios: el nombre del ritmo junto al título, el color del
+trazo, porque cada ritmo tiene el suyo, el deslizador de frecuencia, porque poder moverla
+rompe el ejercicio, el sufijo «irregular» de la etiqueta de frecuencia, que por sí solo
+reducía siete opciones a cuatro, y el resumen impreso debajo de cada botón, que es el
+criterio diagnóstico y convertía dos casos en una comparación de números: leer 54 BPM y
+elegir el que dice «lento, menos de 60 lpm» no es leer un electrocardiograma. Todo eso
+vuelve al revelar, que es cuando enseña.
 
 En el **modo explorar** se puede arrastrar sobre el trazo para poner dos marcas y leer los
 milisegundos que hay entre ellas, con su equivalencia en latidos por minuto, como quien mide
