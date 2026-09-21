@@ -10,6 +10,13 @@ interface RhythmSelectorProps {
   reveal?: { answer: RhythmId; chosen: RhythmId } | null;
   disabled?: boolean;
   label?: string;
+  /**
+   * El resumen de cada ritmo es su criterio diagnóstico, así que con la
+   * pregunta abierta es la respuesta impresa al lado: "lento, menos de 60 lpm"
+   * junto a la frecuencia en pantalla resuelve el caso sin mirar la onda. Se
+   * oculta mientras se responde y vuelve al revelar, que es cuando enseña.
+   */
+  showSummary?: boolean;
 }
 
 export default function RhythmSelector({
@@ -18,6 +25,7 @@ export default function RhythmSelector({
   reveal = null,
   disabled = false,
   label = "Seleccionar ritmo",
+  showSummary = true,
 }: RhythmSelectorProps) {
   return (
     <div
@@ -47,14 +55,16 @@ export default function RhythmSelector({
             )}
           >
             <span className="font-medium">{rhythm.label}</span>
-            <span
-              className={cn(
-                "text-[11px] font-normal leading-tight",
-                selected ? "text-primary-foreground/75" : "text-muted-foreground",
-              )}
-            >
-              {rhythm.summary}
-            </span>
+            {showSummary && (
+              <span
+                className={cn(
+                  "text-[11px] font-normal leading-tight",
+                  selected ? "text-primary-foreground/75" : "text-muted-foreground",
+                )}
+              >
+                {rhythm.summary}
+              </span>
+            )}
           </Button>
         );
       })}

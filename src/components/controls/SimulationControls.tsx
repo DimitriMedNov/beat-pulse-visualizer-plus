@@ -73,6 +73,7 @@ export default function SimulationControls({
             reveal={reveal}
             disabled={examMode && reveal !== null}
             label={examMode ? "Elegir la respuesta" : "Seleccionar ritmo"}
+            showSummary={!examMode || reveal !== null}
           />
         </div>
 
