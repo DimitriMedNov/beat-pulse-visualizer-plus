@@ -1,43 +1,51 @@
+import { Activity, Heart } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Activity } from "lucide-react";
 import HeartAnimation from "@/components/HeartAnimation";
 import LungsAnimation from "@/components/LungsAnimation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Pulse } from "@/lib/pulse";
+import { breathsPerMinute, type Rhythm } from "@/lib/rhythms";
 
 interface DesktopVisualizationProps {
-  rhythmType: string;
+  rhythm: Rhythm;
   isPlaying: boolean;
+  pulse: Pulse | null;
 }
 
 export default function DesktopVisualization({
-  rhythmType,
-  isPlaying
+  rhythm,
+  isPlaying,
+  pulse,
 }: DesktopVisualizationProps) {
   return (
-    <>
-      {/* Heart animation */}
-      <Card className="col-span-1">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Heart className="h-5 w-5 text-pink-500" /> Corazón
+            <Heart className="h-5 w-5 text-pink-500" aria-hidden="true" /> Corazón
+            <span className="ml-auto text-sm font-normal text-muted-foreground">
+              {rhythm.bpm} lpm
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[300px]">
-          <HeartAnimation rhythmType={rhythmType} isPlaying={isPlaying} />
+          <HeartAnimation rhythm={rhythm} isPlaying={isPlaying} pulse={pulse} />
         </CardContent>
       </Card>
 
-      {/* Lungs animation */}
-      <Card className="col-span-1">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-blue-500" /> Pulmones
+            <Activity className="h-5 w-5 text-blue-500" aria-hidden="true" /> Pulmones
+            <span className="ml-auto text-sm font-normal text-muted-foreground">
+              {breathsPerMinute(rhythm)} rpm
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[300px]">
-          <LungsAnimation isPlaying={isPlaying} />
+          <LungsAnimation rhythm={rhythm} isPlaying={isPlaying} />
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 }

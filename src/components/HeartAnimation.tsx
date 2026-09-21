@@ -1,92 +1,163 @@
+import { useEffect, useRef } from "react";
 
-import { Heart } from "lucide-react";
+import { PR_SECONDS } from "@/lib/ecgWaveform";
+import { beatMs, type Rhythm } from "@/lib/rhythms";
+import type { Pulse } from "@/lib/pulse";
 
 interface HeartAnimationProps {
-  rhythmType: string;
+  rhythm: Rhythm;
   isPlaying: boolean;
+  /** Último latido del motor. Cambiar de `id` dispara una contracción. */
+  pulse: Pulse | null;
 }
 
-export default function HeartAnimation({ rhythmType, isPlaying }: HeartAnimationProps) {
-  // Determine which animation class to use based on the rhythm type
-  const getHeartAnimationClass = () => {
-    if (!isPlaying) return "animate-none";
-    
-    switch(rhythmType) {
-      case "normal": return "animate-heart-beat-normal";
-      case "bradycardia": return "animate-heart-beat-bradycardia";
-      case "tachycardia": return "animate-heart-beat-tachycardia";
-      case "arrhythmia": return "animate-heart-beat-arrhythmia";
-      default: return "animate-heart-beat-normal";
-    }
-  };
+/** Cuánto se encogen las cavidades al contraerse. Sístole = cavidad más pequeña. */
+const ATRIAL_SCALE = 0.93;
+const VENTRICULAR_SCALE = 0.88;
 
-  // Use a softer color when not playing
-  const getGradientColors = () => {
-    if (!isPlaying) {
-      return {
-        start: "#F8C4CB",
-        end: "#e66b7d"
-      };
-    }
-    return {
-      start: "#FFDEE2",
-      end: "#e63946"
+export default function HeartAnimation({ rhythm, isPlaying, pulse }: HeartAnimationProps) {
+  const atriaRef = useRef<SVGGElement | null>(null);
+  const ventriclesRef = useRef<SVGGElement | null>(null);
+  const rhythmRef = useRef(rhythm);
+
+  rhythmRef.current = rhythm;
+
+  // El diagrama se mueve con los latidos reales del motor, y cada cavidad con lo
+  // que le toca: las aurículas en la onda P, los ventrículos tras el intervalo
+  // PR. En un latido bloqueado las aurículas se contraen y los ventrículos no,
+  // que es exactamente lo que significa el bloqueo.
+  useEffect(() => {
+    if (!pulse || !isPlaying) return;
+
+    const { event } = pulse;
+    const interval = beatMs(rhythmRef.current);
+    const running: Animation[] = [];
+
+    /**
+     * El retardo va dentro de la animación, no en un `setTimeout`. Un temporizador
+     * queda a merced del estrangulamiento del navegador (en una pestaña en
+     * segundo plano el mínimo sube a un segundo, y los 160 ms del PR se
+     * convertirían en 1000), mientras que la línea de tiempo de la animación es
+     * exacta y se cancela con ella.
+     */
+    const squeeze = (
+      element: SVGGElement | null,
+      scale: number,
+      duration: number,
+      delay = 0,
+    ) => {
+      if (!element || typeof element.animate !== "function") return;
+      running.push(
+        element.animate(
+          [
+            { transform: "scale(1)" },
+            { transform: `scale(${scale})`, offset: 0.35 },
+            { transform: "scale(1)" },
+          ],
+          { duration, delay, easing: "ease-in-out" },
+        ),
+      );
     };
-  };
 
-  const colors = getGradientColors();
+    // La extrasístole nace en el ventrículo: no hay onda P que preceda.
+    if (!event.ventricular) {
+      squeeze(atriaRef.current, ATRIAL_SCALE, Math.min(220, interval * 0.3));
+    }
+
+    // Un latido que no conduce deja aquí a los ventrículos quietos: las
+    // aurículas se contraen y el ventrículo no responde.
+    if (event.conducted) {
+      squeeze(
+        ventriclesRef.current,
+        VENTRICULAR_SCALE,
+        Math.min(340, interval * 0.45),
+        event.ventricular ? 0 : PR_SECONDS * 1000,
+      );
+    }
+
+    return () => {
+      for (const animation of running) animation.cancel();
+    };
+  }, [pulse, isPlaying]);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
-      {/* SVG Heart with softer gradient */}
-      <svg className="w-full h-full max-w-[300px] max-h-[300px]" viewBox="0 0 24 24">
-        <defs>
-          <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={colors.start} />
-            <stop offset="100%" stopColor={colors.end} />
-          </linearGradient>
-        </defs>
-        
-        <path 
-          className={`heart-gradient ${getHeartAnimationClass()}`}
-          transform="translate(12, 12) scale(0.9)"
-          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-          fill="url(#heartGradient)"
-        />
-        
-        {/* Inner details with lighter color */}
-        <path 
-          className={`${getHeartAnimationClass()}`}
-          fill="none" 
-          stroke="rgba(255,255,255,0.8)" 
-          strokeWidth="0.4" 
-          transform="translate(12, 12) scale(0.7)"
-          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-        />
-        
-        {/* Aorta and main blood vessels with softer colors */}
-        <path 
-          className={`${getHeartAnimationClass()}`}
-          fill="none" 
-          stroke={colors.end} 
-          strokeWidth="0.4" 
-          d="M12,5 C12,5 13,3 16,3 C19,3 20.5,5 20.5,5 C20.5,5 21,6 21,7"
-        />
-        <path 
-          className={`${getHeartAnimationClass()}`}
-          fill="none" 
-          stroke={colors.end}
-          strokeWidth="0.4" 
-          d="M12,5 C12,5 11,3 8,3 C5,3 3.5,5 3.5,5 C3.5,5 3,6 3,7"
-        />
-      </svg>
+    <div className="relative flex h-full w-full items-center justify-center">
+      <svg
+        className="h-full w-full max-h-[300px] max-w-[300px]"
+        viewBox="0 0 200 200"
+        role="img"
+        aria-label={`Diagrama del corazón latiendo en ritmo ${rhythm.label.toLowerCase()}`}
+      >
+        {/* Grandes vasos */}
+        <g className="fill-none stroke-muted-foreground/40" strokeWidth="5" strokeLinecap="round">
+          <path d="M58,42 V18" />
+          <path d="M100,40 C100,22 118,16 130,24" />
+          <path d="M142,42 V20" />
+        </g>
 
-      {/* Pulse effect only when playing */}
-      {isPlaying && (
-        <div className={`absolute inset-0 flex items-center justify-center ${getHeartAnimationClass()}`}>
-          <div className="w-[70%] h-[70%] rounded-full bg-pink-200/50 opacity-0 animate-pulse" />
-        </div>
-      )}
+        {/* Aurículas: se contraen en la onda P */}
+        <g ref={atriaRef} className="origin-center-box">
+          <rect
+            x="38"
+            y="42"
+            width="56"
+            height="46"
+            rx="14"
+            className="fill-medical-venous/85 stroke-medical-venous"
+            strokeWidth="2"
+          />
+          <rect
+            x="106"
+            y="42"
+            width="56"
+            height="46"
+            rx="14"
+            className="fill-medical-arterial/85 stroke-medical-arterial"
+            strokeWidth="2"
+          />
+          <text x="66" y="70" className="fill-white text-[13px] font-semibold" textAnchor="middle">
+            AD
+          </text>
+          <text x="134" y="70" className="fill-white text-[13px] font-semibold" textAnchor="middle">
+            AI
+          </text>
+        </g>
+
+        {/* Válvulas auriculoventriculares */}
+        <g className="stroke-muted-foreground/60" strokeWidth="2.5" strokeLinecap="round">
+          <path d="M52,94 L80,94" />
+          <path d="M120,94 L148,94" />
+        </g>
+
+        {/* Ventrículos: se contraen tras el intervalo PR */}
+        <g ref={ventriclesRef} className="origin-center-box">
+          <rect
+            x="38"
+            y="100"
+            width="56"
+            height="64"
+            rx="16"
+            className="fill-medical-venous/85 stroke-medical-venous"
+            strokeWidth="2"
+          />
+          {/* La pared del ventrículo izquierdo es notablemente más gruesa. */}
+          <rect
+            x="106"
+            y="100"
+            width="56"
+            height="70"
+            rx="16"
+            className="fill-medical-arterial/85 stroke-medical-arterial"
+            strokeWidth="6"
+          />
+          <text x="66" y="138" className="fill-white text-[13px] font-semibold" textAnchor="middle">
+            VD
+          </text>
+          <text x="134" y="141" className="fill-white text-[13px] font-semibold" textAnchor="middle">
+            VI
+          </text>
+        </g>
+      </svg>
     </div>
   );
 }
