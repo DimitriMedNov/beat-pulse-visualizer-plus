@@ -1,0 +1,35 @@
+# Las 146 pruebas sujetan lo que el README promete: que el complejo conserva
+# sus tiempos a cualquier frecuencia y que la onda no depende de los FPS. Si
+# nadie las corre en cada push, esas promesas dejan de estar verificadas.
+name: Pruebas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Tipos
+        run: npm run typecheck
+
+      - name: Linter
+        run: npm run lint
+
+      - name: Pruebas
+        run: npm test
+
+      - name: Build
+        run: npm run build
